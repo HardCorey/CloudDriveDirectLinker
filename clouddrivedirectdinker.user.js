@@ -2347,12 +2347,11 @@
         },
 
         getAutoDir() {
-            const breadcrumbSpans = Array.from(document.querySelectorAll('.file-list-breadcrumb .primary span'));
-            const currentDir = breadcrumbSpans.reverse().find((span) => span.textContent && span.textContent.trim());
+            const currentDir = document.querySelector('.file-list-breadcrumb .primary:last-of-type span:last-of-type');
             const subDir = currentDir?.textContent?.trim();
             if (!subDir) return base.getValue('setting_rpc_dir');
             const safeSubDir = base.fixFilename(subDir);
-            return `${base.getValue('setting_rpc_dir').replace(/[\\/]+$/, '')}/${safeSubDir}`;
+            return `${base.getValue('setting_rpc_dir').replace(/[\/]+$/, '')}/${safeSubDir}`;
         },
 
         async sendLinkToRPC(filename, link) {
