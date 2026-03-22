@@ -2197,7 +2197,7 @@
                 target.find('.icon').remove();
                 target.find('.pl-loading').remove();
                 target.prepend(base.createLoading());
-                let res = await this.sendLinkToRPC(e.currentTarget.dataset.filename, e.currentTarget.dataset.link);
+                let res = await this.sendLinkToRPC(e.currentTarget.dataset.filename, e.currentTarget.dataset.link, e.currentTarget.dataset.dir);
                 if (res === 'success') {
                     $('.listener-rpc-task').show();
                     target.removeClass('pl-btn-danger').html('发送成功，快去看看吧！').animate({opacity: '0.5'}, "slow");
@@ -2296,6 +2296,7 @@
         generateDom(list) {
             let content = '<div class="pl-main">';
             let alinkAllText = '';
+            const autoDir = mode === 'rpc_auto_dir' ? this.getAutoDir() : '';
             list.forEach((v, i) => {
                 if (v.file === false) return;
                 let filename = v.file_name;
@@ -2318,7 +2319,7 @@
                 if (mode === 'rpc' || mode === 'rpc_auto_dir') {
                     content += `<div class="pl-item">
                                 <div class="pl-item-name listener-tip" data-size="${size}">${filename}</div>
-                                <button class="pl-item-link listener-link-rpc pl-btn-primary pl-btn-info" data-filename="${filename}" data-link="${dlink}"><em class="icon icon-device"></em><span style="margin-left: 5px;">推送到 RPC 下载器</span></button></div>`;
+                                <button class="pl-item-link listener-link-rpc pl-btn-primary pl-btn-info" data-filename="${filename}" data-link="${dlink}" data-dir="${autoDir}"><em class="icon icon-device"></em><span style="margin-left: 5px;">推送到 RPC 下载器</span></button></div>`;
                 }
                 if (mode === 'curl') {
                     let alink = this.convertLinkToCurl(dlink, filename, navigator.userAgent);
