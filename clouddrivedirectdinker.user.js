@@ -2261,6 +2261,7 @@
         },
 
         async getPCSLink() {
+            const dialogMode = mode === 'rpc_auto_dir' ? 'rpc' : mode;
             selectList = this.getSelectedList();
             if (selectList.length === 0) {
                 return message.error('提示：请先勾选要下载的文件！');
@@ -2283,7 +2284,7 @@
                     return message.error('提示：获取链接失败！');
                 }
                 let html = this.generateDom(res.data);
-                this.showMainDialog(pan[mode][0], html, pan[mode][1]);
+                this.showMainDialog(pan[dialogMode][0], html, pan[dialogMode][1]);
             } else {
                 message.error('提示：请保存到自己网盘后去网盘主页下载！');
                 await base.sleep(1000);
@@ -2314,7 +2315,7 @@
                                 <div class="pl-item-name listener-tip" data-size="${size}">${filename}</div>
                                 <a class="pl-item-link listener-link-aria" href="${alink}" title="点击复制aria2c链接" data-filename="${filename}" data-link="${alink}">${decodeURIComponent(alink)}</a> </div>`;
                 }
-                if (mode === 'rpc') {
+                if (mode === 'rpc' || mode === 'rpc_auto_dir') {
                     content += `<div class="pl-item">
                                 <div class="pl-item-name listener-tip" data-size="${size}">${filename}</div>
                                 <button class="pl-item-link listener-link-rpc pl-btn-primary pl-btn-info" data-filename="${filename}" data-link="${dlink}"><em class="icon icon-device"></em><span style="margin-left: 5px;">推送到 RPC 下载器</span></button></div>`;
@@ -2336,7 +2337,7 @@
             content += '</div>';
             if (mode === 'aria')
                 content += `<div class="pl-extra"><button class="pl-btn-primary listener-copy-all" data-link="${alinkAllText}">复制全部链接</button></div>`;
-            if (mode === 'rpc') {
+            if (mode === 'rpc' || mode === 'rpc_auto_dir') {
                 let rpc = base.getValue('setting_rpc_domain') + ':' + base.getValue('setting_rpc_port') + base.getValue('setting_rpc_path');
                 content += `<div class="pl-extra"><button class="pl-btn-primary listener-send-rpc">发送全部链接</button><button title="${rpc}" class="pl-btn-primary pl-btn-warning listener-open-setting" style="margin-left: 10px">设置 RPC 参数（当前为：${rpc}）</button><button class="pl-btn-primary pl-btn-success listener-rpc-task" style="margin-left: 10px;display: none">查看下载任务</button></div>`;
             }
@@ -2345,13 +2346,21 @@
             return content;
         },
 
+        getAutoDir() {
+            const currentDir = document.querySelector('.file-list-breadcrumb .primary:last-of-type span:last-of-type');
+            const subDir = currentDir?.textContent?.trim();
+            if (!subDir) return base.getValue('setting_rpc_dir');
+            const safeSubDir = base.fixFilename(subDir);
+            return `${base.getValue('setting_rpc_dir').replace(/[\/]+$/, '')}/${safeSubDir}`;
+        },
+
         async sendLinkToRPC(filename, link) {
             let rpc = {
                 domain: base.getValue('setting_rpc_domain'),
                 port: base.getValue('setting_rpc_port'),
                 path: base.getValue('setting_rpc_path'),
                 token: base.getValue('setting_rpc_token'),
-                dir: base.getValue('setting_rpc_dir'),
+                dir: mode === 'rpc_auto_dir' ? this.getAutoDir() : base.getValue('setting_rpc_dir'),
             };
 
             let url = `${rpc.domain}:${rpc.port}${rpc.path}`;
