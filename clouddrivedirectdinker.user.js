@@ -2261,6 +2261,7 @@
         },
 
         async getPCSLink() {
+            const dialogMode = mode === 'rpc_auto_dir' ? 'rpc' : mode;
             selectList = this.getSelectedList();
             if (selectList.length === 0) {
                 return message.error('提示：请先勾选要下载的文件！');
@@ -2283,7 +2284,7 @@
                     return message.error('提示：获取链接失败！');
                 }
                 let html = this.generateDom(res.data);
-                this.showMainDialog(pan[mode][0], html, pan[mode][1]);
+                this.showMainDialog(pan[dialogMode][0], html, pan[dialogMode][1]);
             } else {
                 message.error('提示：请保存到自己网盘后去网盘主页下载！');
                 await base.sleep(1000);
