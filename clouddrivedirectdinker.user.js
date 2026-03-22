@@ -2348,21 +2348,20 @@
         },
 
         getAutoDir() {
-            const breadcrumbSpans = Array.from(document.querySelectorAll('.file-list-breadcrumb .primary span'));
-            const currentDir = breadcrumbSpans.reverse().find((span) => span.textContent && span.textContent.trim());
+            const currentDir = document.querySelector('.file-list-breadcrumb .primary:last-of-type span:last-of-type');
             const subDir = currentDir?.textContent?.trim();
             if (!subDir) return base.getValue('setting_rpc_dir');
             const safeSubDir = base.fixFilename(subDir);
-            return `${base.getValue('setting_rpc_dir').replace(/[\\/]+$/, '')}/${safeSubDir}`;
+            return `${base.getValue('setting_rpc_dir').replace(/[\/]+$/, '')}/${safeSubDir}`;
         },
 
-        async sendLinkToRPC(filename, link, dir) {
+        async sendLinkToRPC(filename, link) {
             let rpc = {
                 domain: base.getValue('setting_rpc_domain'),
                 port: base.getValue('setting_rpc_port'),
                 path: base.getValue('setting_rpc_path'),
                 token: base.getValue('setting_rpc_token'),
-                dir: dir || (mode === 'rpc_auto_dir' ? this.getAutoDir() : base.getValue('setting_rpc_dir')),
+                dir: mode === 'rpc_auto_dir' ? this.getAutoDir() : base.getValue('setting_rpc_dir'),
             };
 
             let url = `${rpc.domain}:${rpc.port}${rpc.path}`;
